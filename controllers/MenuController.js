@@ -1,16 +1,18 @@
-const inquirer = require('inquirer');
+const inquirer = require("inquirer");
 const ContactController = require("./ContactController");
 
 module.exports = class MenuController {
 	constructor() {
 		this.mainMenuQuestions = [
 			{
-				type: 'list',
-				name: 'mainMenuChoice',
-				message: 'Please choose from an option below: ',
+				type: "list",
+				name: "mainMenuChoice",
+				message: "Please choose from an option below: ",
 				choices: [
-					'Add new contact',
-					'Exit'
+					"Add new contact",
+					"View all contacts",
+					"Get today's date",
+					"Exit"
 				]
 			}
 		];
@@ -18,16 +20,19 @@ module.exports = class MenuController {
 	}
 
 	main() {
-		console.log('Welcome to AddressBloc!');
+		console.log("Welcome to AddressBloc!");
 		inquirer.prompt(this.mainMenuQuestions).then((response) => {
 			switch (response.mainMenuChoice) {
 				case "Add new contact":
 					this.addContact();
 					break;
+				case "View all contacts":
+					this.getContacts();
+					break;
 				case "Exit":
 					this.exit();
 				default:
-					console.log('Invalid Input');
+					console.log("Invalid Input");
 					this.main();
 			}
 		})
@@ -37,7 +42,7 @@ module.exports = class MenuController {
 	}
 
 	clear() {
-		console.log('\x1Bc');
+		console.log("\x1Bc");
 	}
 
 	addContact() {
@@ -54,7 +59,7 @@ module.exports = class MenuController {
 	}
 
 	exit() {
-		console.log('Thanks for using AddressBloc!');
+		console.log("Thanks for using AddressBloc!");
 		process.exit();
 	}
 
@@ -62,8 +67,27 @@ module.exports = class MenuController {
 		return this.contacts.length;
 	}
 
+	getContacts() {
+		this.clear();
+
+		this.book.getContacts().then((contacts) => {
+			for (let contact of contacts) {
+				console.log(`
+				name: ${contact.name}
+				phone number: ${contact.phone}
+				email: ${contact.email}
+				-----------------`
+				);
+			}
+			this.main();
+		}).catch((err) => {
+			console.log(err);
+			this.main();
+		});
+	}
+
 	remindMe() {
-		return 'Learning is a life-long pursuit';
+		return "Learning is a life-long pursuit";
 	}
 }
 
